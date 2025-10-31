@@ -55,8 +55,34 @@ with open("100000.json", "r") as fd:
 #
 # Antall objekter: 100000
 ```
+### Konvertere datafelt
 
-## Linke objektene sammen
+I filene så er alle dataelementer kodet som strenger.  Det vil si at 
+```
+   "id" : "12345",
+   "dato": "2025-10-31",
+   ...
+```
+Det må vi gjøre noe, for ytelsens skyld.  Her er koden for de feltene
+jeg tror er viktige:
+```
+    # Anta at objekt holder et Python-objekt, lest inn fra JSON 
+	from datetime import datetime
+	if "statementDate" in objekt:
+	    statementDate = datetime.strptime(objekt[statementDate"], "%y-%m-%d")
+	#
+	if "statementID" in objekt:
+	    statementID = int(objekt[statementID"])
+	#
+	if "identifiers" in objekt:
+	    if "id" in objekt["identifiers"]:
+		    objekt["identifiers"]["id"] =
+			int(objekt["identifiers"]["id"])
+		#
+	#
+```
+
+## Knytte objektene sammen
 
 ### Unik id for alle objekter
 
@@ -70,5 +96,10 @@ Det første er å finne den unike identifikatoren.  Her er koden:
 	
 ```
 Variabelen `unik_id` holder nå en `int` som er unik i datasettet.  Den
-kan brukes til å identifisere noder unikt.
+kan brukes til å identifisere noder.
 
+### Link mellom objektene
+
+Når objektene er lastet inn (i Neo4j) må det settes opp relasjoner.
+De relevante er:
+```
