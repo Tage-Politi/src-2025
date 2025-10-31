@@ -13,35 +13,56 @@ def json_parse(fileobj,
             try:
                 renset = data.strip()
                 objekt, index = decoder.raw_decode(renset)
+
+                # Vi må konvertere viktige typer til "ekte" typer
+                if "statementDate" in objekt:
+                    try:
+                        objekt["statementDate"] = datetime.strptime(objekt["statementDate"], "%Y-%m-%d")
+                    except ValueError:
+                        print(objekt)
+                        raise
+                #
+                if "statementID" in objekt:
+                    objekt["statementID"] = int(objekt["statementID"])
+	        #
+                if "interestedParty" in objekt:
+                    if "describedByPersonStatement" in objekt["interestedParty"]:
+                        objekt["interestedParty"]["describedByPersonStatement"] = \
+                            int(objekt["interestedParty"]["describedByPersonStatement"])
+                    #
+                #
+                if "identifiers" in objekt:
+                    # Er en liste (sukk og dobbeltsukk)
+                    if "id" in objekt["identifiers"][0]:
+                        ids = objekt["identifiers"]
+                        objekt["identifiers"][0]["id"] = \
+                            int(objekt["identifiers"][0]["id"])
+                    #
+	        #
+                if "subject" in objekt:
+                    if "describedByEntityStatement" in objekt["subject"]:
+                        objekt["subject"]["describedByEntityStatement"] = \
+                            int(objekt["subject"]["describedByEntityStatement"])
+                    #fi
+                #fi                
+                # Send det avgårde
                 yield objekt
                 data = renset[index:]
             except ValueError:
                 # Trenger mer data; leser inn
                 break
             #yrt
-            if "statementDate" in objekt:
-                try:
-                    statementDate = datetime.strptime(objekt["statementDate"], "%Y-%m-%d")
-                except ValueError:
-                    print(objekt)
-                    raise
-            if "statementID" in objekt:
-                statementID = int(objekt["statementID"])
-	    #
-            if "identifiers" in objekt:
-                if "id" in objekt["identifiers"]:
-                    objekt["identifiers"]["id"] = int(objekt["identifiers"]["id"])
-		#
-	    #
 	#elihw
      #rof
 #fed
 
 with open("100000.json", "r") as fd:
-    teller = 0
+    typer = {"personStatement": 0,
+             "entityStatement": 0,
+             "ownershipOrControlStatement": 0}
     for objekter in json_parse(fd):
-        teller += 1
+        typer[objekter["statementType"]] += 1
     #rof
-    print(f"Antall objekter: {teller}")
+    print(typer)
 #
 

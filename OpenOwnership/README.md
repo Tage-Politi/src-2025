@@ -55,6 +55,40 @@ with open("100000.json", "r") as fd:
 #
 # Antall objekter: 100000
 ```
+
+### Type på objektet
+
+Typen på objektet er å finne i feltet `objekt["statementType"]`.  Jeg
+har kun funnet tre typer så langt:
+
+- `personStatement` som beskriver en person
+- `entityStatement` beskriver et selskap
+- `ownershipOrControlStatement` viser eierskap i selskap (knytter
+person og selskaper sammen 
+
+I **første runde** setter vi typen av nodene til én av disse tre.
+
+Koden
+```
+with open("100000.json", "r") as fd:
+    typer = {"personStatement": 0,
+             "entityStatement": 0,
+             "ownershipOrControlStatement": 0}
+    for objekter in json_parse(fd):
+        typer[objekter["statementType"]] += 1
+    #rof
+    print(typer)
+#
+```
+skriver ut
+```
+{'personStatement': 21497, 
+'entityStatement': 36573,
+'ownershipOrControlStatement': 41930}
+```
+og en rask summering viser at det er akkurat 100.000 (som forventet).
+
+
 ### Konvertere datafelt
 
 I filene så er alle dataelementer kodet som strenger.  Det vil si at 
@@ -66,23 +100,33 @@ I filene så er alle dataelementer kodet som strenger.  Det vil si at
 Det må vi gjøre noe, for ytelsens skyld.  Her er koden for de feltene
 jeg tror er viktige:
 ```
-    # Anta at objekt holder et Python-objekt, lest inn fra JSON 
-	from datetime import datetime
-
-    if "statementDate" in objekt:
-    try:
-        statementDate = datetime.strptime(objekt["statementDate"], "%Y-%m-%d")
-        except ValueError:
-            print(objekt)
-            raise
-    if "statementID" in objekt:
-        statementID = int(objekt["statementID"])
+	if "statementID" in objekt:
+		objekt["statementID"] = int(objekt["statementID"])
 	#
-    if "identifiers" in objekt:
-        if "id" in objekt["identifiers"]:
-            objekt["identifiers"]["id"] = int(objekt["identifiers"]["id"])
+	if "interestedParty" in objekt:
+		if "describedByPersonStatement" in objekt["interestedParty"]:
+			objekt["interestedParty"]["describedByPersonStatement"] = \
+				int(objekt["interestedParty"]["describedByPersonStatement"])
+	    #
 	#
+	if "identifiers" in objekt:
+		# Er en liste (sukk og dobbeltsukk)
+		if "id" in objekt["identifiers"][0]:
+			ids = objekt["identifiers"]
+			objekt["identifiers"][0]["id"] = \
+				int(objekt["identifiers"][0]["id"])
+	    #
+	#
+	if "subject" in objekt:
+		if "describedByEntityStatement" in objekt["subject"]:
+			objekt["subject"]["describedByEntityStatement"] = \
+				int(objekt["subject"]["describedByEntityStatement"])
+	    #fi
+	#fi
 ```
+Det er sikkert flere!
+
+
 ## Knytte objektene sammen
 
 ### Unik id for alle objekter
@@ -99,8 +143,21 @@ Det første er å finne den unike identifikatoren.  Her er koden:
 Variabelen `unik_id` holder nå en `int` som er unik i datasettet.  Den
 kan brukes til å identifisere noder.
 
-### Link mellom objektene
+### Aksjeeiere
 
-Når objektene er lastet inn (i Neo4j) må det settes opp relasjoner.
-De relevante er:
+Objekter av type `ownershipOrControlStatement` viser eierskap, altså
+hvor mange aksjer en person eier i et selskap.  Hvilket selskap det er
+snakk om, det finner vi i feltet
 ```
+    objekt["subject"]["describedByEntityStatement"]
+```
+Selskapet vil være av typen `entityStatement`.  Personen det er
+snakk om, som altså eier aksjene, er beskrevet i feltet
+```
+	objekt["interestedParty"]["describedByPersonStatement"]
+```
+Jeg har så langt ikke funnet aksjeeiere som ikke er personer, men det
+synes jeg er litt snodig.  Trolig er det bare at jeg ikke har kommet
+over det enda.
+
+
