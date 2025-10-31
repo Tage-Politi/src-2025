@@ -1,10 +1,26 @@
 # Lese og forstå OpenOwnership
 
-Det er to problemer:
+## Splitte datasettet
+Datasettet er `3.981.754.847`bytes **komprimert** mens det i full
+størrelse er `40.140.119.733` bytes (ca 38 GB).  Det inneholder
+`36.508.905` linjer hvor hver linje er ett objekt som beskriver et
+selskap, en person, eller en økonomisk relasjon mellom selskap og/eller
+person(er).
+
+For å hente ut et gitt antall linjer, for eksempel 100, lager man en
+datastrøm:
+```
+unzip -p datasett.zip  | head -n 100 > fil.json
+```
+
+## Syntaktiske problemer
+Det er noen utfordringer:
 - Filene er ikke syntaktisk riktig JSON, ettersom de inneholder mange
   objekter; strengt tatt skal en fil som holder JSON bare ha ett (1)
-  objekt, og
+  objekt;
+- Alle verdier er `str` selv om de burde være tall eller dato, og
 - Det er vanskelig å forstå hva som er de interessante feltene.
+- 
 
 ## Lese inn objektene
 
