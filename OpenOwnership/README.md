@@ -47,9 +47,25 @@ with open("100000.json", "r") as fd:
     teller = 0
     for objekter in json_parse(fd):
         teller += 1
+		# Gjør noe med objektet, for eksempel laste
+		# det inn i en database
     #rof
     print(f"Antall objekter: {teller}")
 #
 #
 # Antall objekter: 100000
 ```
+
+## Linke objektene sammen
+
+### Unik id for alle objekter
+
+Det første er å finne den unike identifikatoren.  Her er koden:
+```
+    # Vi kjører koden over, slik at objekt holder et JSON-objekt
+    unik_id = int(objekt["identifiers"]["id"])
+	
+```
+Variabelen `unik_id` holder nå en `int` som er unik i datasettet.  Den
+kan brukes til å identifisere noder unikt.
+
