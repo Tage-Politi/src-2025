@@ -68,20 +68,21 @@ jeg tror er viktige:
 ```
     # Anta at objekt holder et Python-objekt, lest inn fra JSON 
 	from datetime import datetime
-	if "statementDate" in objekt:
-	    statementDate = datetime.strptime(objekt[statementDate"], "%y-%m-%d")
+
+    if "statementDate" in objekt:
+    try:
+        statementDate = datetime.strptime(objekt["statementDate"], "%Y-%m-%d")
+        except ValueError:
+            print(objekt)
+            raise
+    if "statementID" in objekt:
+        statementID = int(objekt["statementID"])
 	#
-	if "statementID" in objekt:
-	    statementID = int(objekt[statementID"])
-	#
-	if "identifiers" in objekt:
-	    if "id" in objekt["identifiers"]:
-		    objekt["identifiers"]["id"] =
-			int(objekt["identifiers"]["id"])
-		#
+    if "identifiers" in objekt:
+        if "id" in objekt["identifiers"]:
+            objekt["identifiers"]["id"] = int(objekt["identifiers"]["id"])
 	#
 ```
-
 ## Knytte objektene sammen
 
 ### Unik id for alle objekter
