@@ -63,7 +63,10 @@ with open("100000.json", "r") as fd:
 Det første er å finne den unike identifikatoren.  Her er koden:
 ```
     # Vi kjører koden over, slik at objekt holder et JSON-objekt
-    unik_id = int(objekt["identifiers"]["id"])
+	try:
+        unik_id = int(objekt["identifiers"]["id"])
+	except ValueError:
+	    print(f"Error ikke INT: {unik_id}")
 	
 ```
 Variabelen `unik_id` holder nå en `int` som er unik i datasettet.  Den
