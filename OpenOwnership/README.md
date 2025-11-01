@@ -225,7 +225,8 @@ På tide med noen eksperimenter for å se hvordan man best laster inn.
 Én mulighet er å opprette relasjonene til (tomme) noder, og modifisere
 opprettelse av personer og selskaper, eller opprette alle personer og
 selskaper først, og så legge inn relasjonene etterpå (med relasjonene
-som kanter og ikke egne noder).
+som kanter og ikke egne noder).  I praksis: Skal vi bruke `MERGE`
+eller ei.
 På tide med noen eksperimenter
 
 
