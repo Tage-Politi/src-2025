@@ -1,3 +1,4 @@
+# Standard bibliotek
 from json import JSONDecoder
 from functools import partial
 from datetime import datetime
@@ -56,12 +57,30 @@ def json_parse(fileobj,
      #rof
 #fed
 
+from neo4j import GraphDatabase
+
+driver = GraphDatabase.driver("bolt://localhost:7687",
+                              auth=("neo4j", "Velkommen"))
+
 with open("100000.json", "r") as fd:
     typer = {"personStatement": 0,
              "entityStatement": 0,
              "ownershipOrControlStatement": 0}
-    for objekter in json_parse(fd):
-        typer[objekter["statementType"]] += 1
+    for objekt in json_parse(fd):
+        typer[objekt["statementType"]] += 1
+        # Vi lager noder med bare den viktige informasjonen
+        print(f'StatementType: {objekt["statementType"]}')
+        print(f'\tStatementID: {objekt["statementID"]}')        
+        if objekt["statementType"] == "personStatement":        
+            print(f'\tIdentifier: {objekt["identifiers"][0]["id"]}')
+        elif objekt["statementType"] == "ownershipOrControlStatement":
+            print(f'\tSubject: {objekt["subject"]["describedByEntityStatement"]}')
+            print(f'\tPerson: {objekt["interestedParty"]["describedByPersonStatement"]}')
+        elif objekt["statementType"] == "entityStatement":
+            print(f'\tNavn: {objekt["name"]}')
+        else:
+            assert(0 == "Ukjent type")
+        #fi
     #rof
     print(typer)
 #

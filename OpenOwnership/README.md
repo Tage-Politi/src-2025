@@ -176,4 +176,51 @@ Jeg har så langt ikke funnet aksjeeiere som ikke er personer, men det
 synes jeg er litt snodig.  Trolig er det bare at jeg ikke har kommet
 over det enda.
 
+### Oversikt over data
+Her er koden for å hente ut det viktigste slik at vi kan se at alle
+elementer er på den formen vi ønsker:
+```
+with open("100000.json", "r") as fd:
+    typer = {"personStatement": 0,
+             "entityStatement": 0,
+             "ownershipOrControlStatement": 0}
+    for objekt in json_parse(fd):
+        typer[objekt["statementType"]] += 1
+        # Vi lager noder med bare den viktige informasjonen
+        print(f'StatementType: {objekt["statementType"]}')
+        print(f'\tStatementID: {objekt["statementID"]}')        
+        if objekt["statementType"] == "personStatement":        
+            print(f'\tIdentifier: {objekt["identifiers"][0]["id"]}')
+        elif objekt["statementType"] == "ownershipOrControlStatement":
+            print(f'\tSubject: {objekt["subject"]["describedByEntityStatement"]}')
+            print(f'\tPerson: {objekt["interestedParty"]["describedByPersonStatement"]}')
+        elif objekt["statementType"] == "entityStatement":
+            print(f'\tNavn: {objekt["name"]}')
+        else:
+            assert(0 == "Ukjent type")
+        #fi
+    #rof
+    print(typer)
+#
+```
+På tide med noen eksperimenter for å se hvordan man best laster inn.
+Én mulighet er å opprette relasjonene til (tomme) noder, og modifisere
+opprettelse av personer og selskaper, eller opprette alle personer og
+selskaper først, og så legge inn relasjonene etterpå (med relasjonene
+som kanter og ikke egne noder).
+På tide med noen eksperimenter
+
+
+# Laste i Neo4j
+```
+tage@IP5CG1518Y0V:~$ podman run -d \
+      --name neo4j-container \
+      -p 7474:7474 \
+      -p 7687:7687 \
+      -v $HOME/GIT/Tage-Politi/src-2025/OpenOwnership/Neo4j/data:/data \
+      -v $HOME/GIT/Tage-Politi/src-2025/OpenOwnership/Neo4j/logs:/logs \
+      -v $HOME/GIT/Tage-Politi/src-2025/OpenOwnership/Neo4j/import:/var/lib/neo4j/import \
+      -e NEO4J_AUTH=neo4j/Velkommen \
+      neo4j:latest
+```
 
