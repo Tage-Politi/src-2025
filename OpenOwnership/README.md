@@ -203,6 +203,24 @@ with open("100000.json", "r") as fd:
     print(typer)
 #
 ```
+Resultatet er:
+```
+StatementType: entityStatement
+        StatementID: 100019692634382761
+        Navn: DEN SELVEJENDE INSTITUTION SØHOLM
+StatementType: entityStatement
+        StatementID: 10004474695595307041
+        Navn: SæbeGrossisten ApS
+StatementType: personStatement
+        StatementID: 10008819103465301157
+        Identifier: 4003890979
+StatementType: ownershipOrControlStatement
+        StatementID: 10011268000246566669
+        Subject: 84347118211408559
+        Person: 3733202849081635896
+[...]
+```
+
 På tide med noen eksperimenter for å se hvordan man best laster inn.
 Én mulighet er å opprette relasjonene til (tomme) noder, og modifisere
 opprettelse av personer og selskaper, eller opprette alle personer og
