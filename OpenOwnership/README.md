@@ -240,6 +240,6 @@ tage@IP5CG1518Y0V:~$ podman run -d \
       -v $HOME/GIT/Tage-Politi/src-2025/OpenOwnership/Neo4j/logs:/logs \
       -v $HOME/GIT/Tage-Politi/src-2025/OpenOwnership/Neo4j/import:/var/lib/neo4j/import \
       -e NEO4J_AUTH=neo4j/Velkommen \
-      neo4j:latest
+      docker.io/library/neo4j:latest
 ```
 
